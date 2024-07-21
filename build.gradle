@@ -10,6 +10,8 @@ plugins {
 group = "org.validation.framework"
 version = "1.0-SNAPSHOT"
 
+mainClassName = "org.sanjiv.requestvalidator.StartUp"
+
 repositories {
     mavenCentral()
     maven {
