@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<kmodule xmlns="http://www.drools.org/xsd/kmodule">
+
+    <kbase name="kbase-request_validate_flow" packages="request_validate_flow">
+        <ksession name="ksession-request_validate_flow" type="stateless"/>
+    </kbase>
+</kmodule>

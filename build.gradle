@@ -1,0 +1,124 @@
+plugins {
+    id("java")
+    id("distribution")
+    id("jacoco")
+    id("com.diffplug.spotless") version "6.25.0"
+    id("org.gradle.test-retry") version("1.5.6")
+    id("maven-publish")
+}
+
+group = "org.validation.framework"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://maven.google.com")
+    }
+    maven {
+        url = uri("https://repository.jboss.org/maven2")
+    }
+}
+
+def vertxVersion = "4.5.3"
+def nettyVersion = "4.1.108.Final"
+def guiceVersion = "7.0.0"
+def guavaVersion = "32.0.0-jre"
+def droolsVersion = "7.73.0.Final"
+def jbpmVersion = "7.73.0.Final"
+def xtreamVersion = "1.4.20"
+def protobufVersion = "3.21.7"
+def mvelVersion = "2.5.2.Final"
+def junitVersion = "5.9.2"
+def mockitoVersion = "5.10.0"
+def mockitoInlineVersion = "5.1.1"
+def slf4jVersion = "2.23.1"
+
+dependencies {
+
+    implementation("io.vertx:vertx-core:${vertxVersion}")
+    implementation("io.vertx:vertx-web:${vertxVersion}")
+    implementation("io.netty:netty-codec-http2:${nettyVersion}")
+    implementation("com.google.inject:guice:${guiceVersion}")
+    implementation("com.google.guava:guava:${guavaVersion}")
+    implementation("org.kie:kie-api:${droolsVersion}")
+    implementation("org.drools:drools-compiler:${droolsVersion}")
+    implementation("org.drools:drools-core:${droolsVersion}")
+    implementation("org.jbpm:jbpm-flow:${jbpmVersion}")
+    implementation("org.jbpm:jbpm-flow-builder:${jbpmVersion}")
+    implementation("org.jbpm:jbpm-bpmn2:${jbpmVersion}")
+    implementation("com.thoughtworks.xstream:xstream:${xtreamVersion}")
+    implementation("com.google.protobuf:protobuf-java:${protobufVersion}")
+    implementation("org.mvel:mvel2:${mvelVersion}")
+    implementation("io.netty:netty-all:${nettyVersion}")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:${slf4jVersion}")
+    implementation("org.apache.logging.log4j:log4j-core:${slf4jVersion}")
+    implementation("co.elastic.logging:log4j2-ecs-layout:1.5.0")
+    implementation("io.vertx:vertx-micrometer-metrics:4.5.8")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.10.5")
+
+    testImplementation(platform("io.vertx:vertx-junit5:${vertxVersion}"))
+    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation("org.mockito:mockito-inline:${mockitoInlineVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = true
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+    dependsOn(tasks.test)
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks{
+    test{
+        jacoco {
+            excludes = ['']
+        }
+        useJUnitPlatform()
+    }
+
+    spotless {
+        java {
+            removeUnusedImports()
+            indentWithSpaces()
+            endWithNewline()
+            googleJavaFormat("1.17.0")
+        }
+    }
+
+    build{
+        //dependsOn('')
+    }
+
+    compileJava{
+        dependsOn('spotlessApply')
+    }
+
+    compileTestJava{
+        dependsOn('spotlessApply')
+    }
+
+    processResources{
+        //dependsOn('')
+    }
+
+    processTestResources{
+        //dependsOn('')
+    }
+}
+
+defaultTasks("clean", "spotlessApply", "build")
