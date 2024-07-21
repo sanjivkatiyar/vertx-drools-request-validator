@@ -5,7 +5,6 @@ plugins {
     id("com.diffplug.spotless") version "6.25.0"
     id("org.gradle.test-retry") version("1.5.6")
     id("maven-publish")
-    id("application")
 }
 
 group = "org.validation.framework"
@@ -101,9 +100,6 @@ tasks{
             googleJavaFormat("1.17.0")
         }
     }
-    application {
-        mainClassName = "org.sanjiv.requestvalidator.StartUp"
-    }
 
     build{
         //dependsOn('')
@@ -125,5 +121,9 @@ tasks{
         //dependsOn('')
     }
 }
-
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.sanjiv.requestvalidator.StartUp'
+    }
+}
 defaultTasks("clean", "spotlessApply", "build")
