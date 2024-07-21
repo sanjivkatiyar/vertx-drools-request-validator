@@ -5,10 +5,9 @@ plugins {
     id("com.diffplug.spotless") version "6.25.0"
     id("org.gradle.test-retry") version("1.5.6")
     id("maven-publish")
-}
+    id("application")
 
-group = "org.validation.framework"
-version = "1.0-SNAPSHOT"
+}
 
 repositories {
     mavenCentral()
@@ -33,6 +32,8 @@ def junitVersion = "5.9.2"
 def mockitoVersion = "5.10.0"
 def mockitoInlineVersion = "5.1.1"
 def slf4jVersion = "2.23.1"
+def mainClassName = "org.sanjiv.requestvalidator.StartUp"
+def appName = "vertx-drools-request-validator"
 
 dependencies {
 
@@ -69,6 +70,10 @@ java {
     }
 }
 
+application {
+    mainClass.set(mainClassName)
+}
+
 tasks.jacocoTestReport {
     reports {
         xml.required = true
@@ -92,18 +97,7 @@ tasks{
         useJUnitPlatform()
     }
 
-    spotless {
-        java {
-            removeUnusedImports()
-            indentWithSpaces()
-            endWithNewline()
-            googleJavaFormat("1.17.0")
-        }
-    }
 
-    build{
-        //dependsOn('')
-    }
 
     compileJava{
         dependsOn('spotlessApply')
@@ -113,17 +107,45 @@ tasks{
         dependsOn('spotlessApply')
     }
 
-    processResources{
-        //dependsOn('')
+    build {
+        doLast {
+            mkdir layout.buildDirectory.dir("distributions/app/config")
+            copy {
+                from layout.buildDirectory.dir("resource/main")
+                into layout.buildDirectory.dir("distributions/app/config")
+            }
+            delete layout.buildDirectory.dir("distributions/app/bin")
+            copy {
+                from layout.buildDirectory.file("distributions/app/lib/${appName}.jar")
+                into layout.buildDirectory.dir("distributions/app/")
+            }
+            delete layout.buildDirectory.file("distributions/app/lib/${appName}.jar")
+        }
     }
 
-    processTestResources{
-        //dependsOn('')
+    jar {
+        manifest.attributes.put("Main-Class", mainClassName)
     }
-}
-jar {
-    manifest {
-        attributes 'Main-Class': 'org.sanjiv.requestvalidator.StartUp'
+
+    distZip {
+        doLast {
+            ant.unzip(src: "build/distributions/${appName}.zip",
+                    dest: "build/distributions/app",
+                    overwrite: "true") {
+                cutdirsmapper(dirs: 1)
+            }
+        }
     }
+
+    spotless {
+        java {
+            removeUnusedImports()
+            indentWithSpaces()
+            endWithNewline()
+            googleJavaFormat("1.17.0")
+        }
+    }
+
 }
+
 defaultTasks("clean", "spotlessApply", "build")
