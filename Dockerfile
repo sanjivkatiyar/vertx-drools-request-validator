@@ -1,8 +1,5 @@
 FROM openjdk:8-jre-alpine
 
-EXPOSE 8080
+EXPOSE 8888
 
-COPY ./build/libs/vertx-drools-request-validator-1.0-SNAPSHOT.jar /usr/app/
-WORKDIR /usr/app
-
-ENTRYPOINT ["java", "-jar", "vertx-drools-request-validator-1.0-SNAPSHOT.jar"]
+COPY start.sh $HOME/bin/start.sh
