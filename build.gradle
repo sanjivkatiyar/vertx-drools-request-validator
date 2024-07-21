@@ -1,11 +1,10 @@
 plugins {
     id("java")
-    id("distribution")
     id("jacoco")
-    id("com.diffplug.spotless") version "6.25.0"
+    id("com.diffplug.spotless") version("6.25.0")
     id("org.gradle.test-retry") version("1.5.6")
-    id("maven-publish")
     id("application")
+    id("com.github.johnrengelman.shadow") version("8.1.1")
 
 }
 
@@ -17,6 +16,7 @@ repositories {
     maven {
         url = uri("https://repository.jboss.org/maven2")
     }
+    gradlePluginPortal()
 }
 
 def vertxVersion = "4.5.3"
@@ -33,7 +33,6 @@ def mockitoVersion = "5.10.0"
 def mockitoInlineVersion = "5.1.1"
 def slf4jVersion = "2.23.1"
 def mainClassName = "org.sanjiv.requestvalidator.StartUp"
-def appName = "vertx-drools-request-validator"
 
 dependencies {
 
@@ -57,6 +56,7 @@ dependencies {
     implementation("co.elastic.logging:log4j2-ecs-layout:1.5.0")
     implementation("io.vertx:vertx-micrometer-metrics:4.5.8")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.5")
+    implementation("com.github.johnrengelman:shadow:8.1.1")
 
     testImplementation(platform("io.vertx:vertx-junit5:${vertxVersion}"))
     testImplementation("org.mockito:mockito-core:${mockitoVersion}")
@@ -108,33 +108,10 @@ tasks{
     }
 
     build {
-        doLast {
-            mkdir layout.buildDirectory.dir("distributions/app/config")
-            copy {
-                from layout.buildDirectory.dir("resource/main")
-                into layout.buildDirectory.dir("distributions/app/config")
-            }
-            delete layout.buildDirectory.dir("distributions/app/bin")
-            copy {
-                from layout.buildDirectory.file("distributions/app/lib/${appName}.jar")
-                into layout.buildDirectory.dir("distributions/app/")
-            }
-            delete layout.buildDirectory.file("distributions/app/lib/${appName}.jar")
-        }
     }
 
-    jar {
+    shadowJar {
         manifest.attributes.put("Main-Class", mainClassName)
-    }
-
-    distZip {
-        doLast {
-            ant.unzip(src: "build/distributions/${appName}.zip",
-                    dest: "build/distributions/app",
-                    overwrite: "true") {
-                cutdirsmapper(dirs: 1)
-            }
-        }
     }
 
     spotless {

@@ -1,6 +1,9 @@
 FROM openjdk:17-jdk-alpine
 MAINTAINER Sanjiv Katiyar
-ADD build/distributions/app/lib/*.jar app.jar
+
 EXPOSE 8888
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY ./build/libs/vertx-drools-request-validator-all.jar /usr/app/
+WORKDIR /usr/app
+
+ENTRYPOINT ["java", "-jar", "vertx-drools-request-validator-all.jar"]
