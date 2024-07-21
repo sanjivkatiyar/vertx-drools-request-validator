@@ -84,9 +84,6 @@ tasks.test {
 }
 
 tasks{
-    wrapper(type: Wrapper) {
-        gradleVersion = '4.1'
-    }
 
     test{
         jacoco {
