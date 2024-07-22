@@ -6,7 +6,7 @@
                 <KeyValuePair key="author" value="Sanjiv Katiyar"/>
             </EcsLayout>
         </Console>
-        <File name="LogToFile" fileName="logs/app.log">
+        <File name="LogToFile" fileName="/Users/sanjiv/40-49 Projects/es2/filebeat_ingest_data/app.log">
             <EcsLayout serviceName="request-validator" serviceVersion="1.0.0" serviceEnvironment="E0" serviceNodeName="Mac" includeOrigin="true" includeMarkers="true" stackTraceAsArray="true" >
                 <KeyValuePair key="author" value="Sanjiv Katiyar"/>
             </EcsLayout>

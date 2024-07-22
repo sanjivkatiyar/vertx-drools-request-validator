@@ -9,6 +9,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.micrometer.MicrometerMetricsOptions;
 import io.vertx.micrometer.VertxPrometheusOptions;
 import org.sanjiv.requestvalidator.guice.AppModule;
@@ -23,15 +24,13 @@ public class StartUp extends AbstractVerticle {
 
     PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
     new UptimeMetrics().bindTo(registry);
-    Vertx vertx =
-        Vertx.vertx(
-            new VertxOptions()
-                .setMetricsOptions(
-                    new MicrometerMetricsOptions()
-                        .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(true))
-                        .setJvmMetricsEnabled(true)
-                        .setMicrometerRegistry(registry)
-                        .setEnabled(true)));
+      MetricsOptions metricsOptions =
+              new MicrometerMetricsOptions()
+                      .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(true))
+                      .setEnabled(true);
+      VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(metricsOptions);
+      Vertx vertx = Vertx.vertx(vertxOptions);
+
     vertx.exceptionHandler(
         err -> {
           LOGGER.error("Unhandled: ", err.getCause());

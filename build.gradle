@@ -110,6 +110,10 @@ tasks{
     build {
     }
 
+    processResources {}
+
+    processTestResources {}
+
     shadowJar {
         manifest.attributes.put("Main-Class", mainClassName)
     }
